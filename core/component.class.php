@@ -1,8 +1,5 @@
-class Page{
+<?php
+class Component{
 	public $body;
 	public $messages = array();
-
-	function render(){
-
-	}
 }

@@ -1,0 +1,5 @@
+{"templates":{
+	"default" : {
+		"location": "default.template.php"
+	}
+}}
