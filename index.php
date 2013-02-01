@@ -22,8 +22,7 @@ function check_security(){
 	//todo
 }
 
-function render_page(){
-	global $messages;
-	print_r($messages);
+function render_page($yocto){
 	//todo
+	echo('Yoctoblog page rendered');
 }

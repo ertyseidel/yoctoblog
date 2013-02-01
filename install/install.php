@@ -1,9 +1,4 @@
 <?php
-$messages = array(); //array to hold the messages until we get a template up to put them in
-
-//make the working directory the top directory.
-//$messages[] = chdir('../') ? 'Successfully changed working directory.' : 'Error: Was not able to change working directory.';
-
 //create the "content" folder, where all of the user data will go
 create_folder('./content');
 //create the templates folder /content/templates
@@ -22,14 +17,11 @@ copy_default_file('meta.post.php', './content/posts');
 copy_default_file('1.post.php', './content/posts');
 
 function create_folder($dir){
-	global $messages;
-	$messages[] = 'a';
-	$messages[] = !is_dir($dir) ? mkdir($dir) ? "Created folder  $dir" : "Error: Could not create folder $dir - Check your permissions." : "Error: $dir already exists.";
+	yocto['messages'][] = !is_dir($dir) ? mkdir($dir) ? "Created folder  $dir" : "Error: Could not create folder $dir - Check your permissions." : "Error: $dir already exists.";
 }
 
 function copy_default_file($file, $target_dir){
-	global $messages;
 	$origin = './install/defaults/' . $file;
 	$destination = $target_dir . '/' . $file;
-	$messages[] = file_exists($origin) && copy($origin, $destination)? "Successfully copied $origin to $destination." : "Error: Could not copy $origin to $destination - Check your permissions.";
+	yocto['messages'][] = file_exists($origin) && copy($origin, $destination)? "Successfully copied $origin to $destination." : "Error: Could not copy $origin to $destination - Check your permissions.";
 }
