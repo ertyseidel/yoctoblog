@@ -1,11 +1,20 @@
 <?php
 class Renderer{
-	public $content;
+
 	private $template;
+
+	//content for the page
 	public $messages = array();
+	public $content;
+	public $title;
 
 	function setTemplate($tmpl){
-		$this->template = $this->loadMeta('./content/templates/meta.template.json')[$this->template][$tmpl];
+		$json = $this->loadMeta('./content/templates/meta.template.json');
+		$this->template = './content/templates/' . $json['templates'][$tmpl]['location'];
+	}
+
+	function setTitle($title){
+		$this->title = $title;
 	}
 
 	function render(){
@@ -23,7 +32,7 @@ class Renderer{
 		if(is_file($meta)){
 			try{
 				$json = file_get_contents($meta);
-				return json_decode($json);
+				return json_decode($json, true);
 			} catch(Exception $ex){
 				$this->messages[] = "Error: Could not read or parse $meta";
 			}
@@ -32,5 +41,4 @@ class Renderer{
 		}
 		return false;
 	}
-
 }

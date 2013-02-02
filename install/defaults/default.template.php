@@ -2,11 +2,13 @@
 <html lang="en-US">
 <head>
 	<meta charset="UTF-8">
-	<title>Title</title>
+	<title><?php echo($GLOBALS['yocto']->title); ?></title>
 </head>
 <body>
 	<div id="all">
-		<div id="header"></div>
+		<div id="header">
+			<h1><?php echo($GLOBALS['yocto']->title); ?></h1>
+		</div>
 		<div id="messages">
 		<?php
 			foreach($GLOBALS['yocto']->messages as $msg){
@@ -14,7 +16,11 @@
 			}
 		?>
 		</div>
-		<div id="content"></div>
+		<div id="content">
+		<?php
+			echo($GLOBALS['yocto']->content);
+		?>
+		</div>
 		<div id="footer"></div>
 	</div>
 </body>

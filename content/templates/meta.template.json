@@ -1,6 +1,5 @@
-{'templates':[
-	{
-		'title': 'default',
-		'location':
+{"templates":{
+	"default" : {
+		"location": "default.template.php"
 	}
-]}
+}}

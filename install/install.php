@@ -14,7 +14,7 @@ copy_default_file('admin.user.php', './content/users');
 copy_default_file('meta.template.json', './content/templates');
 copy_default_file('default.template.php', './content/templates');
 copy_default_file('meta.post.json', './content/posts');
-copy_default_file('1.post.php', './content/posts');
+copy_default_file('1.post.html', './content/posts');
 
 $GLOBALS['yocto']->messages[] = 'First-time installation complete! Welcome to Yoctoblog!';
 

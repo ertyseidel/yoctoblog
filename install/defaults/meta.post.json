@@ -1,7 +1,8 @@
-{"posts":[
-	{
-		"index": 1,
-		"title": "First Post!",
-		"author": 1
+{
+	"posts":{
+		"0":{
+			"title": "First Post!",
+			"author": 1
+		}
 	}
-]}
+}
