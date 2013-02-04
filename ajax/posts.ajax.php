@@ -1,8 +1,19 @@
 <?php
 
+require_once('../global-functions.php');
+require_once('../class/post.class.php');
+
 //get the query array from the path
-$query = $_SERVER['PATH_INFO'];
+$query = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '0';
 $queryArr = preg_split('/\//', $query);
+
+//check to see if the last parameter specifies a return type
+$returnType = 'html';
+$returnTypes = array('json', 'html', 'rss');
+if(in_array($queryArr[count($queryArr) - 1], $returnTypes)){
+	$returnType = $queryArr[count($queryArr) - 1];
+	array_pop($queryArr);
+}
 
 //turn everything in the query array into an int for safety
 array_map(function($i){return (int)$i;}, $queryArr);
@@ -29,4 +40,24 @@ switch(count($queryArr)){
 	default: //what
 }
 
-echo($start . "," . $count);
+$postMeta = loadMeta('../content/posts/meta.post.json')['posts'];
+foreach($postMeta as $key=>$value){
+	$postMeta[$key]['id'] = $key;
+}
+asort($postMeta);
+$postMeta = array_values($postMeta);
+
+$posts = array();
+
+if($start < 1) $start = 1;
+
+for($i = $start - 1; $i < count($postMeta) && $i < $start + $count; $i++){
+	$posts[] = $postMeta[$i]; //0-based index
+}
+
+switch($returnType){
+	case 'json':
+		echo(json_encode($posts));
+		break;
+	case 'html':
+}

@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title><?php echo($GLOBALS['yocto']->title); ?></title>
+	<?php $GLOBALS['yocto']->renderAjax(); ?>
 </head>
 <body>
 	<div id="all">
@@ -21,6 +22,7 @@
 			echo($GLOBALS['yocto']->content);
 		?>
 		</div>
+		<div id="ajax-posts"></div>
 		<div id="footer"></div>
 	</div>
 </body>

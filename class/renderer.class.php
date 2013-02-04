@@ -2,14 +2,20 @@
 class Renderer{
 
 	private $template;
+	public $ajaxes;
 
 	//content for the page
-	public $messages = array();
+	public $messages;
 	public $content;
 	public $title;
 
+	function __construct(){
+		$this->messages = array();
+		$this->ajaxes = array();
+	}
+
 	function setTemplate($tmpl){
-		$json = $this->loadMeta('./content/templates/meta.template.json');
+		$json = loadMeta('./content/templates/meta.template.json');
 		$this->template = './content/templates/' . $json['templates'][$tmpl]['location'];
 	}
 
@@ -28,17 +34,18 @@ class Renderer{
 		}
 	}
 
-	function loadMeta($meta){
-		if(is_file($meta)){
-			try{
-				$json = file_get_contents($meta);
-				return json_decode($json, true);
-			} catch(Exception $ex){
-				$this->messages[] = "Error: Could not read or parse $meta";
+	function renderAjax(){
+		if(count($this->ajaxes) == 0) return;
+		echo('<script type="text/javascript" src="./js/miniajax.min.js"></script><script type="text/javascript">window.addEventListener(\'load\', function(){');
+		foreach($this->ajaxes as $ajax){
+			if($ajax['type'] == 'get'){
+				echo("ajax.update(\"{$ajax['source']}\", \"{$ajax['id']}\");");
 			}
-		} else{
-			$this->messages[] = "Error: Could not find file $meta";
 		}
-		return false;
+		echo('}, false);</script>');
+	}
+
+	function registerAjax($id, $source, $type = 'get'){
+		$this->ajaxes[] = array('id' => $id, 'source' => $source, 'type' => $type);
 	}
 }
