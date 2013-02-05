@@ -1,5 +1,10 @@
 {"templates":{
 	"default" : {
-		"location": "default.template.php"
+		"type" : "page",
+		"location" : "default.template.php"
+	},
+	"post" : {
+		"type" : "post",
+		"location" : "post.template.php"
 	}
 }}

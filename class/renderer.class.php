@@ -2,6 +2,10 @@
 class Renderer{
 
 	private $template;
+	private $postTemplate;
+
+	private $templateMeta;
+
 	public $ajaxes;
 
 	//content for the page
@@ -12,11 +16,16 @@ class Renderer{
 	function __construct(){
 		$this->messages = array();
 		$this->ajaxes = array();
+
+		$this->templateMeta = loadMeta('./content/templates/meta.template.json');
 	}
 
 	function setTemplate($tmpl){
-		$json = loadMeta('./content/templates/meta.template.json');
-		$this->template = './content/templates/' . $json['templates'][$tmpl]['location'];
+		$this->template = './content/templates/' . $this->templateMeta['templates'][$tmpl]['location'];
+	}
+
+	function setPostTemplate($tmpl){
+		$this->postTemplate = './content/templates/' . $this->templateMeta['templates'][$tmpl]['location'];
 	}
 
 	function setTitle($title){

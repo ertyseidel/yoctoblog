@@ -7,14 +7,29 @@ class Post{
 	private $comments;
 
 	function __construct($meta){
-		$id = $meta['id'];
-		$title = $meta['title'];
-		$content = file_get_contents($meta['location']);
-		$author = $meta['user'];
-		$comments = $meta['id'];
+		$this->id = $meta['id'];
+		$this->title = $meta['title'];
+		$this->content = file_get_contents('../content/posts/' . $meta['id'] . ".post.html");
+		$this->author = $meta['author'];
+		$this->comments = $meta['id'];
 	}
 
 	function load($fileLocation){
 		$json = json_decode(file_get_contents($fileLocation, true));
+	}
+
+	function writeJson($includeContent = false, $includeComments = false){
+		$array = array(
+			'id' => $this->id,
+			'title' => $this->title,
+			'author' => $this->author
+		);
+		if($includeContent) $array['content'] = $this->content;
+		if($includeComments) $array['comments'] = $this->comments;
+		return json_encode($array);
+	}
+
+	function writeHTML(){
+
 	}
 }

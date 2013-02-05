@@ -14,4 +14,5 @@ if(!is_dir('./content/')){ //install needed
 $GLOBALS['yocto']->registerAjax("ajax-posts", "./ajax/posts.ajax.php");
 $GLOBALS['yocto']->setTitle('Welcome to Yoctoblog');
 $GLOBALS['yocto']->setTemplate('default');
+$GLOBALS['yocto']->setPostTemplate('post');
 $GLOBALS['yocto']->render();

@@ -42,7 +42,7 @@ switch(count($queryArr)){
 
 $postMeta = loadMeta('../content/posts/meta.post.json')['posts'];
 foreach($postMeta as $key=>$value){
-	$postMeta[$key]['id'] = $key;
+	$postMeta[$key]['id'] = $key + 1;
 }
 asort($postMeta);
 $postMeta = array_values($postMeta);
@@ -52,12 +52,15 @@ $posts = array();
 if($start < 1) $start = 1;
 
 for($i = $start - 1; $i < count($postMeta) && $i < $start + $count; $i++){
-	$posts[] = $postMeta[$i]; //0-based index
+	$posts[] = new Post($postMeta[$i]); //0-based index
 }
 
 switch($returnType){
 	case 'json':
-		echo(json_encode($posts));
+		echo('[');
+		foreach($posts as $post){
+			echo($post->writeJSON());
+		}
+		echo(']');
 		break;
-	case 'html':
 }
