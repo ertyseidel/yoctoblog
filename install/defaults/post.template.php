@@ -1,4 +1,4 @@
-<h2 class="ajax-post-title" id="ajax-post-title-{$id}"></h2>
-<p class="ajax-post-author" id="ajax-post-author-{$id}"></p>
+<h2 class="post-title"><?php echo $post->title ?></h2>
+<p class="post-detail">By <?php echo $post->author ?> on <?php echo $post->time('m/d/Y')?></p>
 <hr />
-<div class="ajax-post-content" id="ajax-post-content-{$id}"></div>
+<div class="post-content"><?php echo $post->content ?></div>

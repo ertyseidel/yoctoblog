@@ -1,6 +1,6 @@
 <?php
 
-require_once('./global-functions.php');
+require_once('./meta-functions.php');
 require_once('./class/renderer.class.php');
 
 // For debugging purposes - turn this off before release.
@@ -14,5 +14,4 @@ if(!is_dir('./content/')){ //install needed
 $GLOBALS['yocto']->registerAjax("ajax-posts", "./ajax/posts.ajax.php");
 $GLOBALS['yocto']->setTitle('Welcome to Yoctoblog');
 $GLOBALS['yocto']->setTemplate('default');
-$GLOBALS['yocto']->setPostTemplate('post');
 $GLOBALS['yocto']->render();

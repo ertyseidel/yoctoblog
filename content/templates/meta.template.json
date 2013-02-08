@@ -1,10 +1,11 @@
 {"templates":{
 	"default" : {
-		"type" : "page",
-		"location" : "default.template.php"
+		"location": "default.template.php"
 	},
-	"post" : {
-		"type" : "post",
+	"post" :{
 		"location" : "post.template.php"
+	},
+	"rss" : {
+		"location" : "rss.template.php"
 	}
 }}

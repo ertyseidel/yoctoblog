@@ -1,5 +1,11 @@
 {"templates":{
 	"default" : {
 		"location": "default.template.php"
+	},
+	"post" :{
+		"location" : "post.template.php"
+	},
+	"rss" : {
+		"location" : "rss.template.php"
 	}
 }}

@@ -1,6 +1,6 @@
 <?php
 
-require_once('../global-functions.php');
+require_once('../meta-functions.php');
 require_once('../class/post.class.php');
 
 //get the query array from the path
@@ -59,8 +59,19 @@ switch($returnType){
 	case 'json':
 		echo('[');
 		foreach($posts as $post){
-			echo($post->writeJSON());
+			echo($post->getJson());
 		}
 		echo(']');
 		break;
+	case 'html':
+		$template = getTemplatePathFor('post', '..');
+		foreach($posts as $post){
+			include($template);
+		}
+		break;
+	case 'rss':
+		$template = getTemplatePathFor('rss', '..');
+		foreach($posts as $post){
+			include($template);
+		}
 }

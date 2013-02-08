@@ -9,8 +9,7 @@ create_folder('./content/posts');
 create_folder('./content/users');
 
 //now we copy some of the default content from the install folder to the existing folders
-copy_default_file('meta.user.json', './content/users');
-copy_default_file('admin.user.php', './content/users');
+copy_default_file('meta.yocto.json', './content');
 copy_default_file('meta.template.json', './content/templates');
 copy_default_file('default.template.php', './content/templates');
 copy_default_file('post.template.php', './content/templates');
