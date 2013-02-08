@@ -2,24 +2,28 @@
 <html lang="en-US">
 <head>
 	<meta charset="UTF-8">
-	<title><?php echo($GLOBALS['yocto']->title); ?></title>
-	<?php $GLOBALS['yocto']->renderAjax(); ?>
+	<title><?php echo $yocto->title ?></title>
+	<?php echo $yocto->ajax ?>
+	<link rel="stylesheet" type="text/css" href="./content/resources/style.css" media="all">
 </head>
 <body>
 	<div id="all">
 		<div id="header">
-			<h1><?php echo($GLOBALS['yocto']->title); ?></h1>
+			<h1><?php echo $yocto->title ?></h1>
+		</div>
+		<div id="sidebar">
+			<?php echo $yocto->components->sidebar ?>
 		</div>
 		<div id="messages">
 		<?php
-			foreach($GLOBALS['yocto']->messages as $msg){
-				echo("<p>$msg</p>");
+			foreach($yocto->messages as $msg){
+				echo "<p>$msg</p>";
 			}
 		?>
 		</div>
 		<div id="content">
 		<?php
-			echo($GLOBALS['yocto']->content);
+			echo $yocto->content
 		?>
 		</div>
 		<div id="ajax-posts"></div>
