@@ -2,17 +2,14 @@
 class Renderer{
 
 	private $template;
-
 	private $ajaxes;
-
-	//content for the page
-	private $messages;
-	private $content;
-	private $title;
+	private $_messages;
+	private $_content;
+	private $_title;
 
 	function __construct(){
-		$this->messages = array();
-		$this->ajaxes = array();
+		$this->_messages = array();
+		$this->_ajaxes = array();
 	}
 
 	function setTemplate($tmpl){
@@ -20,7 +17,7 @@ class Renderer{
 	}
 
 	function setTitle($title){
-		$this->title = $title;
+		$this->_title = $title;
 	}
 
 	function render(){
@@ -28,21 +25,17 @@ class Renderer{
 			$yocto = $GLOBALS['yocto'];
 			include($this->template);
 		} else{
-			$this->addMessage("Could not load template file {$this->template}", 'error');
-			foreach($this->messages as $msg){
-				echo("<p>$msg</p>");
-			}
+			echo("Could not load template file {$this->template}");
 		}
 	}
 
 	function addMessage($message, $type){
-		if(!in_array()){
+		if(!in_array($type, array('error', 'warn', 'info', 'debug', 'trace'))){
 			$this->addMessage("'$type' is not a valid type of warning: error, warn, info, debug, or trace", 'warning');
 		}
-		$this->messages[] = array(
+		$this->_messages[] = array(
 			'message' => $message,
-			'type' => $type,
-			'backtrace' => debug_backtrace()
+			'type' => $type
 		);
 	}
 
@@ -61,26 +54,21 @@ class Renderer{
 		$this->ajaxes[] = array('id' => $id, 'source' => $source, 'type' => $type);
 	}
 
-	/* Template getter and setter by http://stackoverflow.com/questions/4478661/getter-and-setter */
-
 	public function __get($property) {
 		if($property == 'ajax'){
 			ob_start();
 			$this->renderAjax();
 			return ob_get_clean();
-		} else if($property == 'messsages'){
-			foreach($messages as $message){
-				echo("<div id='message message-{$message['type']}'>{$message['message']}<div id='backtrace'>{$message['backtrace']}</div></div>");
+		} else if($property == 'messages'){
+			ob_start();
+			foreach($this->_messages as $message){
+				echo("<div id='message message-{$message['type']}'>{$message['message']}</div>");
 			}
+	  		return ob_get_clean();
+		} else if($property == 'components'){
+			return new ComponentManager($this);
 		} else if (property_exists($this, $property)) {
 			return $this->$property;
 		}
-	}
-
-	public function __set($property, $value) {
-		if (property_exists($this, $property)) {
-			$this->$property = $value;
-		}
-		return $this;
 	}
 }

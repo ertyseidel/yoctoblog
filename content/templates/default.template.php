@@ -7,24 +7,18 @@
 	<link rel="stylesheet" type="text/css" href="./content/resources/style.css" media="all">
 </head>
 <body>
+	<div id="sidebar">
+		<?php echo $yocto->components->sidebar ?>
+	</div>
 	<div id="all">
-		<div id="sidebar">
-			Aw yee sidebar
-		</div>
 		<div id="header">
 			<h1><?php echo $yocto->title ?></h1>
 		</div>
 		<div id="messages">
-		<?php
-			foreach($yocto->messages as $msg){
-				echo "<p>$msg</p>";
-			}
-		?>
+		<?php echo $yocto->messages ?>
 		</div>
 		<div id="content">
-		<?php
-			echo $yocto->content
-		?>
+		<?php echo $yocto->content ?>
 		</div>
 		<div id="ajax-posts"></div>
 		<div id="footer"></div>

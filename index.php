@@ -2,6 +2,7 @@
 
 require_once('./meta-functions.php');
 require_once('./class/renderer.class.php');
+require_once('./class/componentmanager.class.php');
 
 // For debugging purposes - turn this off before release.
 error_reporting(E_ALL);

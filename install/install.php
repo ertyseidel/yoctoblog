@@ -40,10 +40,10 @@ foreach($files as $destination => $list){
 $GLOBALS['yocto']->addMessage('First-time installation complete! Welcome to Yoctoblog!', 'info');
 
 function create_folder($dir){
-	if(!is_dir($dir))
-		if(mkdir($dir))
+	if(!is_dir($dir)){
+		if(mkdir($dir)){
 			$GLOBALS['yocto']->addMessage("Created folder $dir", 'info');
-		else{
+		} else{
 			$GLOBALS['yocto']->addMessage("Error: Could not create folder $dir - Check your permissions.", 'error');
 		}
 	} else{
