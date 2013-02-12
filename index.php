@@ -13,6 +13,6 @@ if(!is_dir('./content/')){ //install needed
 	include('./install/install.php'); //run install
 }
 $GLOBALS['yocto']->registerAjax("ajax-posts", "./ajax/posts.ajax.php");
-$GLOBALS['yocto']->setTitle('Welcome to Yoctoblog');
+$GLOBALS['yocto']->setTitle('Yoctoblog');
 $GLOBALS['yocto']->setTemplate('default');
 $GLOBALS['yocto']->render();

@@ -2,14 +2,14 @@
 class Renderer{
 
 	private $template;
-	private $ajaxes;
+	private $_ajaxes;
 	private $_messages;
-	private $_content;
-	private $_title;
+	private $content;
+	private $title;
 
 	function __construct(){
 		$this->_messages = array();
-		$this->_ajaxes = array();
+		$this->ajaxes = array();
 	}
 
 	function setTemplate($tmpl){
@@ -17,7 +17,7 @@ class Renderer{
 	}
 
 	function setTitle($title){
-		$this->_title = $title;
+		$this->title = $title;
 	}
 
 	function render(){
