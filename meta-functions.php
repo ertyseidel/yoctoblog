@@ -30,6 +30,27 @@ function getTemplatePathFor($type, $path = '.'){
 }
 
 function getUserById($id, $path = '.'){
+	require_once($path . '/class/user.class.php');
 	$yoctoMeta = loadMeta($path . '/content/meta.yocto.json');
-	return $yoctoMeta['users'][$id];
+	foreach($yoctoMeta['users'] as $id => $user){
+		$yoctoMeta['users'][$id]['id'] = $id;
+	}
+	return new User($yoctoMeta['users'][$id]);
+}
+
+function getAction($action, $path = '.'){
+	$yoctoMeta = loadMeta($path . '/content/meta.yocto.json');
+	if(isset($yoctoMeta['actions'][$action])){
+		$yoctoMeta['actions'][$action]['action'] = $action;
+		return $yoctoMeta['actions'][$action];
+	}
+}
+
+function saveMeta($array, $destination){
+	$fh = fopen($destination, 'w+');
+	if($fh){
+		fwrite($fh, json_encode($array, JSON_PRETTY_PRINT));
+	} else{
+		echo("Error: Unable to open $destination for writing.");
+	}
 }

@@ -13,6 +13,7 @@
 	<div id="all">
 		<div id="header">
 			<h1><?php echo $yocto->title ?></h1>
+			<p><?php echo $yocto->subtitle ?></p>
 		</div>
 		<div id="messages">
 		<?php echo $yocto->messages ?>

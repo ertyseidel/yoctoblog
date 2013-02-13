@@ -1,3 +1,6 @@
-<a href="?login">Log In</a>
-<a href="?write">Write Post</a>
-<a href="?posts">Edit Posts</a>
+<ul>
+	<li><a href="?login">Log In</a></li>
+	<li><a href="?write">Write Post</a></li>
+	<li><a href="?posts">Edit Posts</a></li>
+	<li><a href="?users">Edit Users</a></li>
+</ul>

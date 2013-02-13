@@ -11,9 +11,6 @@ create_folder('./content/components');
 
 //now we copy some of the default content from the install folder to the existing folders
 $files = array(
-	'' => array(
-		'meta.yocto.json'
-	),
 	'templates' => array(
 		'meta.template.json',
 		'default.template.php',
@@ -36,6 +33,33 @@ foreach($files as $destination => $list){
 		copy_default_file($file, './content/' . $destination);
 	}
 }
+
+//now we create the default users and settings
+$meta = array(
+	"users" => array(
+		1 => array(
+			"username" => "admin",
+			"password" => "root"
+		)
+	),
+	"actions" => array(
+		"default" => array(
+			"template" => "default",
+			"secure" => false,
+			"title" => ''
+		),
+		"login" => array(
+			"template" => "default",
+			"secure" => false,
+			"title" => 'Login'
+		)
+	),
+	"title"	=> "Yoctoblog",
+	"subtitle" => "Standalone Macroblogging Microplatform"
+);
+
+saveMeta($meta, './content/meta.yocto.json');
+$GLOBALS['yocto']->addMessage('Successfully created meta.yocto.json.', 'info');
 
 $GLOBALS['yocto']->addMessage('First-time installation complete! Welcome to Yoctoblog!', 'info');
 

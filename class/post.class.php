@@ -11,8 +11,7 @@ class Post{
 		$this->id = $meta['id'];
 		$this->title = $meta['title'];
 		$this->content = file_get_contents('../content/posts/' . $meta['id'] . ".post.html");
-		$this->authorID = $meta['author'];
-		$this->author = getUserById($meta['author'], '..')['name'];
+		$this->author = getUserById($meta['author'], '..');
 		$this->comments = $meta['id'];
 		$this->timestamp = $meta['timestamp'];
 	}
@@ -31,8 +30,6 @@ class Post{
 	function time($format = "Y-m-d h:m:s"){
 		return date($format, $this->timestamp);
 	}
-
-	/* Template getter and setter by http://stackoverflow.com/questions/4478661/getter-and-setter */
 
 	public function __get($property) {
     	if (property_exists($this, $property)) {
