@@ -18,7 +18,7 @@ class Renderer{
 	function setAction($action, $path = '.'){
 		$this->action = $this->metaManager->getActionMeta($action, $path);
 		if(!$this->action){
-			$this->action = getActionMeta('default', $path);
+			$this->action = $this->metaManager->getActionMeta('default', $path);
 		}
 		if(isset($this->action['secure']) && $this->action['secure']){
 			//todo

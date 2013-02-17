@@ -1,19 +1,15 @@
 <?php
 class Post{
-	private $id;
-	private $title;
-	private $content;
-	private $author;
-	private $comments;
-	private $timestamp;
 
-	function __construct($meta){
-		$this->id = $meta['id'];
-		$this->title = $meta['title'];
+	private $metaManager;
+	private $meta;
+	private $content;
+
+	function __construct(&$metaManager, $meta){
+		$this->metaManager = $metaManager;
+		$this->meta = $meta;
 		$this->content = file_get_contents('../content/posts/' . $meta['id'] . ".post.html");
-		$this->author = $meta['author'];
-		$this->comments = $meta['id'];
-		$this->timestamp = $meta['timestamp'];
+		$this->author = metaManager->yocto['users'][$meta->author];
 	}
 
 	function getJson($includeContent = false, $includeComments = false){
@@ -32,15 +28,9 @@ class Post{
 	}
 
 	public function __get($property) {
-    	if (property_exists($this, $property)) {
-			return $this->$property;
-		}
-	}
 
-	public function __set($property, $value) {
-		if (property_exists($this, $property)) {
-			$this->$property = $value;
+		switch($property){
+
 		}
-		return $this;
 	}
 }

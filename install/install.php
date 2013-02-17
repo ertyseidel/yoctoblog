@@ -13,7 +13,7 @@ create_folder('./content/components');
 $files = array(
 	'templates' => array(
 		'meta.template.json',
-		'default.template.php',
+		'global.template.php',
 		'post.template.php',
 		'login.template.php'
 	),
@@ -25,7 +25,8 @@ $files = array(
 		'style.css'
 	),
 	'components' => array(
-		'sidebar.component.php'
+		'sidebar.component.php',
+		'ajaxloader.component.php',
 	)
 );
 
@@ -60,29 +61,32 @@ $meta = array(
 	"subtitle" => "Standalone Macroblogging Microplatform"
 );
 
-saveMeta($meta, './content/meta.yocto.json');
-$GLOBALS['yocto']->addMessage('Successfully created meta.yocto.json.', 'info');
+$metaManager = new MetaManager();
+$metaManager->saveMeta($meta, './content/meta.yocto.json');
+$y->addMessage('Successfully created meta.yocto.json.', 'info');
 
-$GLOBALS['yocto']->addMessage('First-time installation complete! Welcome to Yoctoblog!', 'info');
+$y->addMessage('First-time installation complete! Welcome to Yoctoblog!', 'info');
 
 function create_folder($dir){
+	global $y;
 	if(!is_dir($dir)){
 		if(mkdir($dir)){
-			$GLOBALS['yocto']->addMessage("Created folder $dir", 'info');
+			$y->addMessage("Created folder $dir", 'info');
 		} else{
-			$GLOBALS['yocto']->addMessage("Error: Could not create folder $dir - Check your permissions.", 'error');
+			$y->addMessage("Error: Could not create folder $dir - Check your permissions.", 'error');
 		}
 	} else{
-		$GLOBALS['yocto']->addMessage("Error: $dir already exists.", 'error');
+		$y->addMessage("Error: $dir already exists.", 'error');
 	}
 }
 
 function copy_default_file($file, $target_dir){
+	global $y;
 	$origin = './install/defaults/' . $file;
 	$destination = $target_dir . '/' . $file;
 	if(file_exists($origin) && copy($origin, $destination)){
-		$GLOBALS['yocto']->addMessage("Successfully copied $origin to $destination.", 'info');
+		$y->addMessage("Successfully copied $origin to $destination.", 'info');
 	} else {
-		$GLOBALS['yocto']->addMessage("Error: Could not copy $origin to $destination - Check your permissions.", 'error');
+		$y->addMessage("Error: Could not copy $origin to $destination - Check your permissions.", 'error');
 	}
 }

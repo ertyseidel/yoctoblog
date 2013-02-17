@@ -1,8 +1,9 @@
+<?php echo $y->loginpage; ?>
 <!doctype html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title></title>
+	<title><?php echo $y->title ?></title>
 </head>
 <body>
 	<table>

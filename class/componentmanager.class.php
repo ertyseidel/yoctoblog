@@ -2,19 +2,19 @@
 
 class ComponentManager{
 
-	private $renderer;
+	private $yocto;
 
-	function __construct($renderer){
-		$this->renderer = $renderer;
+	function __construct($yocto){
+		$this->yocto = $yocto;
 	}
 
 	function __get($property){
 		$componentPath = "./content/components/$property.component.php";
 		if(is_file($componentPath)){
-			$yocto = $GLOBALS['yocto'];
+			$y = $this->yocto;
 			include($componentPath);
 		} else {
-			$this->renderer->addMessage("Warning: Could not load component $componentPath", 'warn');
+			$this->yocto->addMessage("Warning: Could not load component $componentPath", 'warn');
 		}
 	}
 

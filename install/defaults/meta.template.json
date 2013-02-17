@@ -1,6 +1,6 @@
 {"templates":{
-	"default" : {
-		"location": "default.template.php"
+	"global" : {
+		"location": "global.template.php"
 	},
 	"post" :{
 		"location" : "post.template.php"
