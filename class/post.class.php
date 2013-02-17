@@ -11,7 +11,7 @@ class Post{
 		$this->id = $meta['id'];
 		$this->title = $meta['title'];
 		$this->content = file_get_contents('../content/posts/' . $meta['id'] . ".post.html");
-		$this->author = getUserById($meta['author'], '..');
+		$this->author = $meta['author'];
 		$this->comments = $meta['id'];
 		$this->timestamp = $meta['timestamp'];
 	}

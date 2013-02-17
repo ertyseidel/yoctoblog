@@ -14,7 +14,8 @@ $files = array(
 	'templates' => array(
 		'meta.template.json',
 		'default.template.php',
-		'post.template.php'
+		'post.template.php',
+		'login.template.php'
 	),
 	'posts' => array(
 		'meta.post.json',
@@ -45,12 +46,13 @@ $meta = array(
 	"actions" => array(
 		"default" => array(
 			"template" => "default",
-			"secure" => false,
-			"title" => ''
+			"title" => '',
+			"ajax" => array(
+				'ajax-posts' => 'posts.ajax.php'
+			)
 		),
 		"login" => array(
-			"template" => "default",
-			"secure" => false,
+			"template" => "login",
 			"title" => 'Login'
 		)
 	),

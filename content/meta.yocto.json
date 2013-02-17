@@ -6,10 +6,16 @@
         }
     },
     "actions": {
+        "default": {
+            "template": "default",
+            "title": "",
+            "ajax": {
+                "ajax-posts": "posts.ajax.php"
+            }
+        },
         "login": {
             "template": "login",
-            "secure": false,
-            "title": "Yoctoblog - Login"
+            "title": "Login"
         }
     },
     "title": "Yoctoblog",

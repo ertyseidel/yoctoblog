@@ -1,6 +1,6 @@
 <?php
 
-require_once('../meta-functions.php');
+require_once('../class/metamanager.class.php');
 require_once('../class/post.class.php');
 
 //get the query array from the path
@@ -40,20 +40,8 @@ switch(count($queryArr)){
 	default: //what
 }
 
-$postMeta = loadMeta('../content/posts/meta.post.json')['posts'];
-foreach($postMeta as $key=>$value){
-	$postMeta[$key]['id'] = $key + 1;
-}
-asort($postMeta);
-$postMeta = array_values($postMeta);
-
-$posts = array();
-
-if($start < 1) $start = 1;
-
-for($i = $start - 1; $i < count($postMeta) && $i < $start + $count; $i++){
-	$posts[] = new Post($postMeta[$i]); //0-based index
-}
+$meta = new MetaManager();
+$posts = $meta->getPosts($start, $count);
 
 switch($returnType){
 	case 'json':
@@ -64,14 +52,14 @@ switch($returnType){
 		echo(']');
 		break;
 	case 'html':
-		$template = getTemplatePathFor('post', '..');
+		$template = $meta->getTemplateMeta('post', '..');
 		foreach($posts as $post){
-			include($template);
+			include($template['location']);
 		}
 		break;
 	case 'rss':
-		$template = getTemplatePathFor('rss', '..');
+		$template = $meta->getTemplateMeta('rss', '..');
 		foreach($posts as $post){
-			include($template);
+			include($template['location']);
 		}
 }

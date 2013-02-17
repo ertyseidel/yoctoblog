@@ -1,19 +1,38 @@
 <?php
 class Renderer{
 
+	private $action;
 	private $template;
 	private $_ajaxes;
 	private $_messages;
 	private $content;
 	private $title;
+	private $metaManager;
 
 	function __construct(){
 		$this->_messages = array();
 		$this->ajaxes = array();
+		$this->metaManager = new MetaManager();
 	}
 
-	function setTemplate($tmpl){
-		$this->template = getTemplatePathFor($tmpl);
+	function setAction($action, $path = '.'){
+		$this->action = $this->metaManager->getActionMeta($action, $path);
+		if(!$this->action){
+			$this->action = getActionMeta('default', $path);
+		}
+		if(isset($this->action['secure']) && $this->action['secure']){
+			//todo
+		}
+		if(isset($this->action['ajax'])){
+			foreach($this->action['ajax'] as $id=>$path){
+				$this->registerAjax($id, $path);
+			}
+		}
+		$this->title = $this->metaManager->getTitle();
+		if(isset($this->action['title']) && $this->action['title']){
+			$this->title .= ' - ' . $this->action['title'];
+		}
+		$this->template = $this->metaManager->getTemplateMeta($this->action['template']);
 	}
 
 	function setTitle($title){
@@ -21,11 +40,11 @@ class Renderer{
 	}
 
 	function render(){
-		if($this->template && $this->template != '' && is_file($this->template)){
+		if(is_file($this->template['location'])){
 			$yocto = $GLOBALS['yocto'];
-			include($this->template);
+			include($this->template['location']);
 		} else{
-			echo("Could not load template file {$this->template}");
+			echo("Could not load template file {$this->template['location']}");
 		}
 	}
 
@@ -50,8 +69,8 @@ class Renderer{
 		echo('}, false);</script>');
 	}
 
-	function registerAjax($id, $source, $type = 'get'){
-		$this->ajaxes[] = array('id' => $id, 'source' => $source, 'type' => $type);
+	function registerAjax($id, $source, $type = 'get', $path = '.'){
+		$this->ajaxes[] = array('id' => $id, 'source' => $path . '/ajax/' . $source, 'type' => $type);
 	}
 
 	public function __get($property) {
