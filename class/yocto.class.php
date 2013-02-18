@@ -17,28 +17,30 @@ class Yocto{
 		if(!in_array($type, array('error', 'warn', 'info', 'debug', 'trace'))){
 			$this->addMessage("'$type' is not a valid type of warning: error, warn, info, debug, or trace", 'warning');
 		}
-		$this->__messages[] = array(
+		$this->_messages[] = array(
 			'message' => $message,
 			'type' => $type
 		);
 	}
 
-	function registerAjax($id, $source, $type = 'get', $path = '.'){
-		$this->_ajaxes[] = array('id' => $id, 'source' => $path . '/ajax/' . $source, 'type' => $type);
+	function registerAjax($ajaxArray, $path = '.'){
+		foreach($ajaxArray as $id=>$ajax){
+			$this->_ajaxes[] = array('id' => $id, 'source' => $path . '/ajax/' . $ajax['source'], 'type' => $ajax['type']);
+		}
 	}
 
 	public function __get($property) {
 		switch($property){
 			case 'components':
 				return new ComponentManager($this);
-			case 'ajax':
-				return $this->_ajaxes;
 			case 'messages':
 				ob_start();
 				foreach($this->_messages as $message){
 					echo("<div id='message message-{$message['type']}'>{$message['message']}</div>");
 				}
 	  			return ob_get_clean();
+	  		case 'ajax':
+	  			return $this->_ajaxes;
 			case 'title':
 				return $this->_metaManager->yocto['title'];
 			case 'subtitle':
@@ -66,11 +68,10 @@ class Yocto{
 				$this->actionEdit($action, $params);
 				break;
 			case 'default':
-			default:
+				$action = 'default';
 				$this->actionDefault($action, $params);
 				break;
 		}
-		if(count($this->_messages)) print_r($this->_messages);
 	}
 
 	function actionDefault(){
@@ -111,5 +112,7 @@ class Yocto{
 		for($i = $start; $i < $count && $i < count($postMeta); $i++){
 			$_metaManager->getPostById($postMeta[$i]);
 		}
+
+
 	}
 }

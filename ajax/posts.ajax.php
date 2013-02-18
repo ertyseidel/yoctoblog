@@ -40,9 +40,6 @@ switch(count($queryArr)){
 	default: //what
 }
 
-$meta = new MetaManager();
-$posts = $meta->getPosts($start, $count);
-
 switch($returnType){
 	case 'json':
 		echo('[');
@@ -52,13 +49,13 @@ switch($returnType){
 		echo(']');
 		break;
 	case 'html':
-		$template = $meta->getTemplateMeta('post', '..');
+		$template = $meta->templates['html'];
 		foreach($posts as $post){
 			include($template['location']);
 		}
 		break;
 	case 'rss':
-		$template = $meta->getTemplateMeta('rss', '..');
+		$template = $meta->templates['rss'];
 		foreach($posts as $post){
 			include($template['location']);
 		}

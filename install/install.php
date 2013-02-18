@@ -47,10 +47,7 @@ $meta = array(
 	"actions" => array(
 		"default" => array(
 			"template" => "default",
-			"title" => '',
-			"ajax" => array(
-				'ajax-posts' => 'posts.ajax.php'
-			)
+			"title" => ''
 		),
 		"login" => array(
 			"template" => "login",

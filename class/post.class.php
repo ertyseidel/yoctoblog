@@ -9,7 +9,7 @@ class Post{
 		$this->metaManager = $metaManager;
 		$this->meta = $meta;
 		$this->content = file_get_contents('../content/posts/' . $meta['id'] . ".post.html");
-		$this->author = metaManager->yocto['users'][$meta->author];
+		$this->author = $this->metaManager->yocto['users'][$meta->author];
 	}
 
 	function getJson($includeContent = false, $includeComments = false){

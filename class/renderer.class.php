@@ -58,19 +58,10 @@ class Renderer{
 		);
 	}
 
-	function renderAjax(){
-		if(count($this->ajaxes) == 0) return;
-		echo('<script type="text/javascript" src="./js/miniajax.min.js"></script><script type="text/javascript">window.addEventListener(\'load\', function(){');
-		foreach($this->ajaxes as $ajax){
-			if($ajax['type'] == 'get'){
-				echo("ajax.update(\"{$ajax['source']}\", \"{$ajax['id']}\");");
-			}
-		}
-		echo('}, false);</script>');
-	}
-
 	function registerAjax($id, $source, $type = 'get', $path = '.'){
-		$this->ajaxes[] = array('id' => $id, 'source' => $path . '/ajax/' . $source, 'type' => $type);
+		foreach($ajaxes as $id=>$ajax){
+			$this->_ajaxes[] = array('id' => $ajax[''], 'source' => $path . '/ajax/' . $source, 'type' => $type);
+		}
 	}
 
 	public function __get($property) {

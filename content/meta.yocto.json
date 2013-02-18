@@ -8,10 +8,7 @@
     "actions": {
         "default": {
             "template": "default",
-            "title": "",
-            "ajax": {
-                "ajax-posts": "posts.ajax.php"
-            }
+            "title": ""
         },
         "login": {
             "template": "login",

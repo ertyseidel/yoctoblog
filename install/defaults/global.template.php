@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title><?php echo $y->title ?></title>
-	<?php echo $y->ajax ?>
+	<?php echo $y->components->ajaxloader ?>
 	<link rel="stylesheet" type="text/css" href="./content/resources/style.css" media="all">
 </head>
 <body>
