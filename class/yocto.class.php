@@ -23,10 +23,8 @@ class Yocto{
 		);
 	}
 
-	function registerAjax($ajaxArray, $path = '.'){
-		foreach($ajaxArray as $id=>$ajax){
-			$this->_ajaxes[] = array('id' => $id, 'source' => $path . '/ajax/' . $ajax['source'], 'type' => $ajax['type']);
-		}
+	function registerAjax($id, $source, $type, $path = '.'){
+		$this->_ajaxes[] = array('id' => $id, 'source' => $path . '/' . $source, 'type' => $type);
 	}
 
 	public function __get($property) {
@@ -68,6 +66,7 @@ class Yocto{
 				$this->actionEdit($action, $params);
 				break;
 			case 'default':
+			default:
 				$action = 'default';
 				$this->actionDefault($action, $params);
 				break;
@@ -75,42 +74,30 @@ class Yocto{
 	}
 
 	function actionDefault(){
+		$this->registerAjax('ajax-posts', 'index.php?action=posts', 'get');
+		$y = $this;
+		include($this->globalTemplate['location']);
+	}
+
+	function actionLogin(){
 		$y = $this;
 		include($this->globalTemplate['location']);
 	}
 
 	function actionPosts($action, $params){
+		require_once('./class/post.class.php');
 		//check if the last param contains a return type
 		$returnType = 'html';
 		$returnTypes = array('json', 'html', 'rss');
-		if(in_array($params[count($params) - 1], $returnTypes)){
-			$returnType = $params[count($params) - 1];
-			array_pop($params);
-		}
 
-		$start = 0;
-		$count = 0;
+		$start = isset($_GET['start']) ? $_GET['start'] : 0;
+		$count = isset($_GET['count']) ? $_GET['count'] : 10;
 
-		switch(count($params)){
-			case 0: //return the first ten posts
-				$start = 0;
-				$count = 10;
-				break;
-			case 1: //return the post with the given id
-				$start = $params[0];
-				$count = 1;
-				break;
-			case 2: //return $params[1] posts, starting on $params[0]
-				$start = $params[0];
-				$count = $params[1];
-				break;
-			default: //what
-		}
-
-		$postMeta = $_metaManager->posts;
+		$postMeta = $this->_metaManager->posts;
 
 		for($i = $start; $i < $count && $i < count($postMeta); $i++){
-			$_metaManager->getPostById($postMeta[$i]);
+			$post = $this->_metaManager->getPostById($postMeta[$i]);
+			include($this->_metaManager->templates['post']['location']);
 		}
 
 

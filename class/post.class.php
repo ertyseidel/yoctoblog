@@ -8,8 +8,7 @@ class Post{
 	function __construct(&$metaManager, $meta){
 		$this->metaManager = $metaManager;
 		$this->meta = $meta;
-		$this->content = file_get_contents('../content/posts/' . $meta['id'] . ".post.html");
-		$this->author = $this->metaManager->yocto['users'][$meta->author];
+		$this->content = file_get_contents('./content/posts/' . $meta['id'] . ".post.html");
 	}
 
 	function getJson($includeContent = false, $includeComments = false){
@@ -28,9 +27,13 @@ class Post{
 	}
 
 	public function __get($property) {
-
 		switch($property){
-
+			case 'author':
+				return $this->metaManager->yocto['users'][$this->meta['author']]['username'];
+			case 'content':
+				return $this->content;
+			default:
+				if(isset($this->meta[$property])) return $this->meta[$property];
 		}
 	}
 }

@@ -21,7 +21,6 @@
 		<div id="content">
 		<?php echo $y->content ?>
 		</div>
-		<div id="ajax-posts"></div>
 		<div id="footer"></div>
 	</div>
 </body>

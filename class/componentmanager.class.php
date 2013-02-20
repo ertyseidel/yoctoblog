@@ -14,7 +14,7 @@ class ComponentManager{
 			$y = $this->yocto;
 			include($componentPath);
 		} else {
-			$this->yocto->addMessage("Warning: Could not load component $componentPath", 'warn');
+			$y->addMessage("Warning: Could not load component $componentPath", 'warn');
 		}
 	}
 
