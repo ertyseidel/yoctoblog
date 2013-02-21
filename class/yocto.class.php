@@ -34,6 +34,8 @@ class Yocto{
 				return new ComponentManager($this);
 			case 'messages':
 				ob_start();
+				$this->_messages = array_merge($this->_messages, $_SESSION['messages']);
+				$_SESSION['messages']  = array();
 				foreach($this->_messages as $message){
 					echo("<div class='message message-{$message['type']}'>{$message['message']}</div>");
 				}
