@@ -1,18 +1,9 @@
 {
     "users": {
         "1": {
-            "username": "admin",
-            "password": "root"
-        }
-    },
-    "actions": {
-        "default": {
-            "template": "default",
-            "title": ""
-        },
-        "login": {
-            "template": "login",
-            "title": "Login"
+            "salt": "925a105",
+            "password": "92X\/EflepVtHg",
+            "username": "admin"
         }
     },
     "title": "Yoctoblog",

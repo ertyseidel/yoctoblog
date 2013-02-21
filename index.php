@@ -1,4 +1,9 @@
 <?php
+
+require_once('./class/user.class.php');
+
+session_start();
+
 require_once('./class/yocto.class.php');
 
 // For debugging purposes - turn this off before release.

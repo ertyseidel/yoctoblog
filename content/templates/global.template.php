@@ -12,7 +12,7 @@
 	</div>
 	<div id="all">
 		<div id="header">
-			<h1><?php echo $y->title ?></h1>
+			<h1><a href="./?action=default"><?php echo $y->title ?></a></h1>
 			<p><?php echo $y->subtitle ?></p>
 		</div>
 		<div id="messages">
@@ -21,7 +21,6 @@
 		<div id="content">
 		<?php echo $y->content ?>
 		</div>
-		<div id="ajax-posts"></div>
 		<div id="footer"></div>
 	</div>
 </body>

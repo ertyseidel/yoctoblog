@@ -1,11 +1,5 @@
-<?php echo $y->loginpage; ?>
-<!doctype html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title><?php echo $y->title ?></title>
-</head>
-<body>
+<h2>Login to <?php echo $y->title; ?></h2>
+<form action="./?action=login" method="post">
 	<table>
 		<tr>
 			<td>Username:</td>
@@ -19,5 +13,4 @@
 			<td colspan="2"><input type="submit" value="Login" /></td>
 		</tr>
 	</table>
-</body>
-</html>
+</form>

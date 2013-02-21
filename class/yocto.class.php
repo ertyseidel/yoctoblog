@@ -43,6 +43,12 @@ class Yocto{
 				return $this->_metaManager->yocto['title'];
 			case 'subtitle':
 				return $this->_metaManager->yocto['subtitle'];
+			case 'authenticated':
+				return isset($_SESSION['user']);
+			case 'metaManager':
+				return $this->_metaManager;
+			case 'user':
+				return isset($_SESSION['user']) ? $_SESSION['user'] : false;
 			default:
 				if (property_exists($this, $property)) {
 					return $this->$property;
@@ -54,6 +60,7 @@ class Yocto{
 		$this->globalTemplate = $this->_metaManager->templates['global'];
 		switch($action){
 			case 'login':
+			case 'logout':
 				$this->actionLogin($action, $params);
 				break;
 			case 'posts':
@@ -62,6 +69,8 @@ class Yocto{
 			case 'config':
 				$this->actionConfig($action, $params);
 				break;
+			case 'write':
+				$params['id'] = 0;
 			case 'edit':
 				$this->actionEdit($action, $params);
 				break;
@@ -73,15 +82,45 @@ class Yocto{
 		}
 	}
 
+	function loadContent($location, $path = '.'){
+		ob_start();
+		$y = $this;
+		include($location);
+		$this->content = ob_get_clean();
+	}
+
+	function actionEdit(){
+		$this->loadContent($this->_metaManager->templates['write']);
+		$y = $this;
+		include($this->globalTemplate);
+
+	}
+
 	function actionDefault(){
 		$this->registerAjax('ajax-posts', 'index.php?action=posts', 'get');
+		$this->loadContent($this->_metaManager->templates['homepage']);
 		$y = $this;
-		include($this->globalTemplate['location']);
+		include($this->globalTemplate);
 	}
 
 	function actionLogin(){
-		$y = $this;
-		include($this->globalTemplate['location']);
+		require_once('./class/user.class.php');
+		unset($_SESSION['user']);
+		if(isset($_POST['username']) && isset($_POST['password'])){
+			foreach($this->_metaManager->yocto['users'] as $id => $user){
+				if($user['username'] == $_POST['username'] && $user['password'] == crypt($_POST['password'], $user['salt'])){
+					$user['id'] = $id;
+					$_SESSION['user'] = new User($user);
+				}
+			}
+		}
+		if(isset($_SESSION['user'])){
+			$this->redirect('index.php?action=default');
+		} else {
+			$this->loadContent($this->_metaManager->templates['login']);
+			$y = $this;
+			include($this->globalTemplate);
+		}
 	}
 
 	function actionPosts($action, $params){
@@ -96,10 +135,59 @@ class Yocto{
 		$postMeta = $this->_metaManager->posts;
 
 		for($i = $start; $i < $count && $i < count($postMeta); $i++){
-			$post = $this->_metaManager->getPostById($postMeta[$i]);
-			include($this->_metaManager->templates['post']['location']);
+			$post = $this->getPostById($postMeta[$i]);
+			include($this->_metaManager->templates['post']);
 		}
+	}
 
+	function actionConfig($action, $params){
+		if(count($_POST) > 0){
+			$yoctoMeta = $this->_metaManager->yocto;
+			if(isset($_POST['title'])) $yoctoMeta['title'] = $_POST['title'];
+			if(isset($_POST['subtitle'])) $yoctoMeta['subtitle'] = $_POST['subtitle'];
+			if(isset($_POST['username'])){
+				foreach($_POST['username'] as $id => $username){
+					if(isset($_POST['password'][$id]) && strpos($_POST['password'][$id], '---') === false){
+						if(isset($yoctoMeta['users'][$id])){
+							$yoctoMeta['users'][$id]['username'] = $username;
+							$yoctoMeta['users'][$id]['password'] = crypt($_POST['password'][$id], $yoctoMeta['users'][$id]['salt']);
+						}
+					}
+				}
+			}
+			$this->_metaManager->saveMeta($yoctoMeta, './content/meta.yocto.json');
+			if(isset($_POST['username_new']) && isset($_POST['password_new'])){
+				if($_POST['username_new'] && $_POST['password_new']){
+					$this->createUser($_POST['username_new'], $_POST['password_new']);
+				}
+			}
+			$this->redirect('index.php?action=config');
+		}
+		$this->loadContent($this->_metaManager->templates['config']);
+		$y = $this;
+		include($this->globalTemplate);
+	}
 
+	function createUser($username, $password, $path = '.'){
+		require_once($path . '/class/user.class.php');
+		$user = new User(array(
+			'username' => $username,
+			'password' => $password
+		));
+		$yoctoMeta = $this->_metaManager->yocto;
+		$nextId = count($yoctoMeta['users']) + 1;
+		$user = $user->toArray();
+		if(!$user['id']) unset($user['id']);
+		$yoctoMeta['users'][$nextId] = $user;
+		$this->_metaManager->saveMeta($yoctoMeta, $path . '/content/meta.yocto.json');
+		$this->_metaManager->resetCache();
+	}
+
+	function getPostById($meta){
+		return new Post($this->_metaManager, $meta);
+	}
+
+	function redirect($path){
+		header("Location: $path");
 	}
 }

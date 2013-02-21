@@ -1,26 +1,29 @@
 <?php
 class User{
 
-	private $id;
-	private $username;
-	private $password;
+	private $meta;
 
 	function __construct($meta){
-		$this->id = $meta['id'];
-		$this->username = $meta['username'];
+		$this->meta = array();
+		$this->meta['id'] = isset($meta['id']) ? $meta['id'] : 0;
+		if(isset($meta['salt']) && isset($meta['password'])){
+			$this->meta['salt'] = $meta['salt'];
+			$this->meta['password'] = $meta['password'];
+		} else{
+			$this->meta['salt'] = substr(md5(rand()),0, 7);
+			$this->meta['password'] = crypt($meta['password'], $this->meta['salt']);
+		}
+		$this->meta['username'] = $meta['username'];
 	}
 
 	public function __get($property) {
-    	if (property_exists($this, $property)) {
-			return $this->$property;
+    	if(isset($this->meta[$property])){
+			return $this->meta[$property];
 		}
 	}
 
-	public function __set($property, $value) {
-		if (property_exists($this, $property)) {
-			$this->$property = $value;
-		}
-		return $this;
+	function toArray(){
+		return $this->meta;
 	}
 
 }
