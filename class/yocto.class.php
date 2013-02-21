@@ -10,7 +10,11 @@ class Yocto{
 		require_once($path . '/class/metamanager.class.php');
 		require_once($path . '/class/componentmanager.class.php');
 		$this->_metaManager = new MetaManager();
-		$this->_messages = $_SESSION['messages'];
+		if(isset($_SESSION['messages'])){
+			$this->_messages = $_SESSION['messages'];
+		} else {
+			$this->_messages = array();
+		}
 		$_SESSION['messages'] = array();
 	}
 
@@ -72,8 +76,6 @@ class Yocto{
 			case 'config':
 				$this->actionConfig($action, $params);
 				break;
-			case 'write':
-				$params['id'] = 0;
 			case 'edit':
 				$this->actionEdit($action, $params);
 				break;
@@ -92,11 +94,13 @@ class Yocto{
 		$this->content = ob_get_clean();
 	}
 
-	function actionEdit(){
-		$this->loadContent($this->_metaManager->templates['write']);
+	function actionEdit($action, $params){
+		$this->loadContent($this->_metaManager->templates['edit']);
 		$y = $this;
+		if(isset($params['id'])){
+			$post = $this->getPostById($params['id']);
+		}
 		include($this->globalTemplate);
-
 	}
 
 	function actionDefault(){
@@ -222,6 +226,7 @@ class Yocto{
 	}
 
 	function getPostById($meta){
+		require_once('./class/post.class.php');
 		return new Post($this->_metaManager, $meta);
 	}
 
