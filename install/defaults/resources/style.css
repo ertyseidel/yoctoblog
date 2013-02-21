@@ -6,3 +6,8 @@
 #all{
 	margin-right: 200px;
 }
+
+.message{
+	border: 1px solid black;
+	padding: 1em;
+}

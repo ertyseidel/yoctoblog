@@ -3,21 +3,22 @@
 class Yocto{
 
 	private $_metaManager;
-	private $_messages;
 	private $_ajaxes;
+	private $_messages;
 
 	function __construct($path = '.'){
 		require_once($path . '/class/metamanager.class.php');
 		require_once($path . '/class/componentmanager.class.php');
 		$this->_metaManager = new MetaManager();
-		$this->_messages = array();
+		$this->_messages = $_SESSION['messages'];
+		$_SESSION['messages'] = array();
 	}
 
 	function addMessage($message, $type){
 		if(!in_array($type, array('error', 'warn', 'info', 'debug', 'trace'))){
 			$this->addMessage("'$type' is not a valid type of warning: error, warn, info, debug, or trace", 'warning');
 		}
-		$this->_messages[] = array(
+		$_SESSION['messages'][] = array(
 			'message' => $message,
 			'type' => $type
 		);
@@ -34,7 +35,7 @@ class Yocto{
 			case 'messages':
 				ob_start();
 				foreach($this->_messages as $message){
-					echo("<div id='message message-{$message['type']}'>{$message['message']}</div>");
+					echo("<div class='message message-{$message['type']}'>{$message['message']}</div>");
 				}
 	  			return ob_get_clean();
 	  		case 'ajax':
@@ -105,12 +106,14 @@ class Yocto{
 
 	function actionLogin(){
 		require_once('./class/user.class.php');
+		if(isset($_SESSION['user'])) $this->addMessage('You have been logged out.', 'info');
 		unset($_SESSION['user']);
 		if(isset($_POST['username']) && isset($_POST['password'])){
 			foreach($this->_metaManager->yocto['users'] as $id => $user){
 				if($user['username'] == $_POST['username'] && $user['password'] == crypt($_POST['password'], $user['salt'])){
 					$user['id'] = $id;
 					$_SESSION['user'] = new User($user);
+					$this->addMessage("Welcome, {$user['username']}. You have been logged in.", 'info');
 				}
 			}
 		}
@@ -162,6 +165,13 @@ class Yocto{
 				}
 			}
 			$this->redirect('index.php?action=config');
+			if(isset($_POST['delete'])){
+				foreach($_POST['delete'] as $id => $value){
+					if($value){
+						$this->deleteUser($id);
+					}
+				}
+			}
 		}
 		$this->loadContent($this->_metaManager->templates['config']);
 		$y = $this;
@@ -175,12 +185,38 @@ class Yocto{
 			'password' => $password
 		));
 		$yoctoMeta = $this->_metaManager->yocto;
-		$nextId = count($yoctoMeta['users']) + 1;
+		if(count($yoctoMeta['users'])){
+			$nextId = max(array_keys($yoctoMeta['users'])) + 1;
+		} else {
+			$nextId = 1;
+		}
 		$user = $user->toArray();
 		if(!$user['id']) unset($user['id']);
 		$yoctoMeta['users'][$nextId] = $user;
 		$this->_metaManager->saveMeta($yoctoMeta, $path . '/content/meta.yocto.json');
-		$this->_metaManager->resetCache();
+	}
+
+	function deleteUser($id, $path = '.'){
+		require_once($path . '/class/user.class.php');
+		$yoctoMeta = $this->_metaManager->yocto;
+		if(count($yoctoMeta['users']) == 1){
+			$this->addMessage('You cannot delete the last existing user!', 'error');
+			return false;
+		}
+		$postMeta = $this->_metaManager->posts;
+		foreach($postMeta as $post){
+			if($post['author'] == $id){
+				$this->addMessage('You must delete all of a user\'s posts before you can delete the user!', 'error');
+				return false;
+			}
+		}
+		if(!isset($yoctoMeta['users'][$id])){
+			$this->addMessage('User with the given id does not exist.', 'error');
+			return false;
+		}
+		unset($yoctoMeta['users'][$id]);
+		$this->_metaManager->saveMeta($yoctoMeta, $path . '/content/meta.yocto.json');
+		return true;
 	}
 
 	function getPostById($meta){

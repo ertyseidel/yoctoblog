@@ -59,6 +59,7 @@ class MetaManager{
 		} else{
 			echo("Error: Unable to open $destination for writing.");
 		}
+		$this->resetCache();
 	}
 
 	function resetCache(){
