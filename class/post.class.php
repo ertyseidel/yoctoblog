@@ -12,18 +12,11 @@ class Post{
 	}
 
 	function getJson($includeContent = false, $includeComments = false){
-		$array = array(
-			'id' => $this->id,
-			'title' => $this->title,
-			'author' => $this->author
-		);
-		if($includeContent) $array['content'] = $this->content;
-		if($includeComments) $array['comments'] = $this->comments;
-		return json_encode($array);
+		return json_encode($meta);
 	}
 
-	function time($format = "Y-m-d h:m:s"){
-		return date($format, $this->timestamp);
+	function posttime($format = "Y-m-d h:m:s"){
+		return date($format, strtotime($this->meta['timestamp']));
 	}
 
 	public function __get($property) {
@@ -37,6 +30,7 @@ class Post{
 				return $this->_content;
 			default:
 				if(isset($this->meta[$property])) return $this->meta[$property];
+				else return '';
 		}
 	}
 }

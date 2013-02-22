@@ -9,10 +9,10 @@ class MetaManager{
 			case 'posts':
 				if(isset($metaCache['posts'])) return $metaCache['posts'];
 				$postMeta = $this->_loadMeta('/content/posts/meta.post.json')['posts'];
-				foreach($postMeta as $key=>$value){
-					$postMeta[$key]['id'] = $key + 1;
-				}
 				asort($postMeta);
+				foreach($postMeta as $key=>$value){
+					$postMeta[$key]['id'] = $key;
+				}
 				$postMeta = array_values($postMeta);
 				return $postMeta;
 			case 'templates':

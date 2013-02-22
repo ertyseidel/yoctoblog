@@ -4,6 +4,6 @@
 	"post" : "post.template.php",
 	"rss" : "rss.template.php",
 	"login" : "login.template.php",
-	"write" : "write.template.php",
+	"edit" : "edit.template.php",
 	"config" : "config.template.php"
 }}

@@ -95,11 +95,18 @@ class Yocto{
 	}
 
 	function actionEdit($action, $params){
+		require_once('./class/post.class.php');
 		$this->loadContent($this->_metaManager->templates['edit']);
-		$y = $this;
 		if(isset($params['id'])){
-			$post = $this->getPostById($params['id']);
+			$this->post = $this->getPostByMeta($this->_metaManager->posts[$params['id']]);
+		} else{
+			$this->post = new Post($this->_metaManager, array('datetime' => date('Y-m-d\TH:')));
 		}
+		if(count($_POST)){
+
+		}
+		$y = $this;
+		$this->loadContent($this->_metaManager->templates['edit']);
 		include($this->globalTemplate);
 	}
 
@@ -138,19 +145,19 @@ class Yocto{
 		$returnType = 'html';
 		$returnTypes = array('json', 'html', 'rss');
 
-		$start = isset($_GET['start']) ? $_GET['start'] : 0;
-		$count = isset($_GET['count']) ? $_GET['count'] : 10;
+		$start = isset($params['start']) ? $params['start'] : 0;
+		$count = isset($params['count']) ? $params['count'] : 10;
 
 		$postMeta = $this->_metaManager->posts;
 
 		for($i = $start; $i < $count && $i < count($postMeta); $i++){
-			$post = $this->getPostById($postMeta[$i]);
+			$post = $this->getPostByMeta($postMeta[$i]);
 			include($this->_metaManager->templates['post']);
 		}
 	}
 
 	function actionConfig($action, $params){
-		if(count($_POST) > 0){
+		if(count($_POST)){
 			$yoctoMeta = $this->_metaManager->yocto;
 			if(isset($_POST['title'])) $yoctoMeta['title'] = $_POST['title'];
 			if(isset($_POST['subtitle'])) $yoctoMeta['subtitle'] = $_POST['subtitle'];
@@ -225,7 +232,7 @@ class Yocto{
 		return true;
 	}
 
-	function getPostById($meta){
+	function getPostByMeta($meta){
 		require_once('./class/post.class.php');
 		return new Post($this->_metaManager, $meta);
 	}
