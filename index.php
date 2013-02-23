@@ -1,6 +1,7 @@
 <?php
 
 require_once('./class/user.class.php');
+require_once('./class/post.class.php');
 
 session_start();
 

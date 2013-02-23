@@ -18,20 +18,6 @@ class Yocto{
 		$_SESSION['messages'] = array();
 	}
 
-	function addMessage($message, $type){
-		if(!in_array($type, array('error', 'warn', 'info', 'debug', 'trace'))){
-			$this->addMessage("'$type' is not a valid type of warning: error, warn, info, debug, or trace", 'warning');
-		}
-		$_SESSION['messages'][] = array(
-			'message' => $message,
-			'type' => $type
-		);
-	}
-
-	function registerAjax($id, $source, $type, $path = '.'){
-		$this->_ajaxes[] = array('id' => $id, 'source' => $path . '/' . $source, 'type' => $type);
-	}
-
 	public function __get($property) {
 		switch($property){
 			case 'components':
@@ -63,28 +49,18 @@ class Yocto{
 		}
 	}
 
-	function render($action, $params){
-		$this->globalTemplate = $this->_metaManager->templates['global'];
-		switch($action){
-			case 'login':
-			case 'logout':
-				$this->actionLogin($action, $params);
-				break;
-			case 'posts':
-				$this->actionPosts($action, $params);
-				break;
-			case 'config':
-				$this->actionConfig($action, $params);
-				break;
-			case 'edit':
-				$this->actionEdit($action, $params);
-				break;
-			case 'default':
-			default:
-				$action = 'default';
-				$this->actionDefault($action, $params);
-				break;
+	function addMessage($message, $type){
+		if(!in_array($type, array('error', 'warn', 'info', 'debug', 'trace'))){
+			$this->addMessage("'$type' is not a valid type of warning: error, warn, info, debug, or trace", 'warning');
 		}
+		$_SESSION['messages'][] = array(
+			'message' => $message,
+			'type' => $type
+		);
+	}
+
+	function registerAjax($id, $source, $call, $path = '.'){
+		$this->_ajaxes[] = array('id' => $id, 'source' => $path . '/' . $source, 'call' => $call);
 	}
 
 	function loadContent($location, $path = '.'){
@@ -94,30 +70,90 @@ class Yocto{
 		$this->content = ob_get_clean();
 	}
 
-	function actionEdit($action, $params){
-		require_once('./class/post.class.php');
-		$this->loadContent($this->_metaManager->templates['edit']);
-		if(isset($params['id'])){
-			$this->post = $this->getPostByMeta($this->_metaManager->posts[$params['id']]);
-		} else{
-			$this->post = new Post($this->_metaManager, array('datetime' => date('Y-m-d\TH:')));
-		}
-		if(count($_POST)){
-
-		}
-		$y = $this;
-		$this->loadContent($this->_metaManager->templates['edit']);
-		include($this->globalTemplate);
+	function createUser($username, $password, $path = '.'){
+		$user = new User(array(
+			'username' => $username,
+			'password' => $password
+		));
+		$yoctoMeta = $this->_metaManager->yocto;
+		$nextId = ++$yoctoMeta['max_user'];
+		$user = $user->toArray();
+		if(!$user['id']) unset($user['id']);
+		$yoctoMeta['users'][$nextId] = $user;
+		$this->_metaManager->saveMeta($yoctoMeta, $path . '/content/meta.yocto.json');
 	}
 
-	function actionDefault(){
-		$this->registerAjax('ajax-posts', 'index.php?action=posts', 'get');
-		$this->loadContent($this->_metaManager->templates['homepage']);
-		$y = $this;
-		include($this->globalTemplate);
+	function createPost(){
+		$yoctoMeta = $this->_metaManager->yocto;
+		$meta = array(
+			'id' => ++$yoctoMeta['max_post'],
+			'author' => $_SESSION['user']->username,
+			'timestamp' => date('c')
+		);
 	}
 
-	function actionLogin(){
+	function deleteUser($id, $path = '.'){
+		$yoctoMeta = $this->_metaManager->yocto;
+		if(count($yoctoMeta['users']) == 1){
+			$this->addMessage('You cannot delete the last existing user!', 'error');
+			return false;
+		}
+		$postMeta = $this->_metaManager->posts;
+		foreach($postMeta as $post){
+			if($post['author'] == $id){
+				$this->addMessage('You must delete all of a user\'s posts before you can delete the user!', 'error');
+				return false;
+			}
+		}
+		if(!isset($yoctoMeta['users'][$id])){
+			$this->addMessage('User with the given id does not exist.', 'error');
+			return false;
+		}
+		unset($yoctoMeta['users'][$id]);
+		$this->_metaManager->saveMeta($yoctoMeta, $path . '/content/meta.yocto.json');
+		return true;
+	}
+
+	function metaToPost($meta){
+		return new Post($this->_metaManager, $meta);
+	}
+
+	function redirect($path){
+		header("Location: $path");
+		die();
+	}
+
+	function render($action, $params){
+		$this->globalTemplate = $this->_metaManager->templates['global'];
+		switch($action){
+			case 'login':
+			case 'logout':
+				$this->actionLogin($params);
+				break;
+			case 'ajax-posts':
+				$this->actionPosts($params);
+				break;
+			case 'ajax-submitpost':
+				$this->actionSubmitPost($params);
+				break;
+			case 'config':
+				$this->actionConfig($params);
+				break;
+			case 'write':
+				$this->actionWrite($params);
+				break;
+			case 'edit':
+				$this->actionEdit($action);
+				break;
+			case 'default':
+			default:
+				$action = 'default';
+				$this->actionDefault($action);
+				break;
+		}
+	}
+
+	function actionLogin($params){
 		require_once('./class/user.class.php');
 		if(isset($_SESSION['user'])) $this->addMessage('You have been logged out.', 'info');
 		unset($_SESSION['user']);
@@ -139,8 +175,7 @@ class Yocto{
 		}
 	}
 
-	function actionPosts($action, $params){
-		require_once('./class/post.class.php');
+	function actionPosts($params){
 		//check if the last param contains a return type
 		$returnType = 'html';
 		$returnTypes = array('json', 'html', 'rss');
@@ -151,12 +186,24 @@ class Yocto{
 		$postMeta = $this->_metaManager->posts;
 
 		for($i = $start; $i < $count && $i < count($postMeta); $i++){
-			$post = $this->getPostByMeta($postMeta[$i]);
+			$post = $this->metaToPost($postMeta[$i]);
 			include($this->_metaManager->templates['post']);
 		}
 	}
 
-	function actionConfig($action, $params){
+	function actionSubmitPost($params){
+		$status = array(
+			'success' => false,
+			'messages' => array(),
+			'post' => false
+		);
+		if(count($_POST)){
+
+		}
+		echo(json_encode($status));
+	}
+
+	function actionConfig($params){
 		if(count($_POST)){
 			$yoctoMeta = $this->_metaManager->yocto;
 			if(isset($_POST['title'])) $yoctoMeta['title'] = $_POST['title'];
@@ -191,53 +238,34 @@ class Yocto{
 		include($this->globalTemplate);
 	}
 
-	function createUser($username, $password, $path = '.'){
-		require_once($path . '/class/user.class.php');
-		$user = new User(array(
-			'username' => $username,
-			'password' => $password
-		));
-		$yoctoMeta = $this->_metaManager->yocto;
-		if(count($yoctoMeta['users'])){
-			$nextId = max(array_keys($yoctoMeta['users'])) + 1;
-		} else {
-			$nextId = 1;
+	function actionWrite($params){
+		$this->registerAjax('ajax-submitpost', 'index.php?action=ajax-submitpost', 'delayed');
+		$this->loadContent($this->_metaManager->templates['edit']);
+		if(isset($params['id'])){
+			$this->post = $this->metaToPost($this->_metaManager->posts[$params['id']]);
+		} else{
+			$this->post = $this->createPost();
 		}
-		$user = $user->toArray();
-		if(!$user['id']) unset($user['id']);
-		$yoctoMeta['users'][$nextId] = $user;
-		$this->_metaManager->saveMeta($yoctoMeta, $path . '/content/meta.yocto.json');
+		if(count($_POST)){
+
+		}
+		$y = $this;
+		$this->loadContent($this->_metaManager->templates['edit']);
+		include($this->globalTemplate);
 	}
 
-	function deleteUser($id, $path = '.'){
-		require_once($path . '/class/user.class.php');
-		$yoctoMeta = $this->_metaManager->yocto;
-		if(count($yoctoMeta['users']) == 1){
-			$this->addMessage('You cannot delete the last existing user!', 'error');
-			return false;
-		}
-		$postMeta = $this->_metaManager->posts;
-		foreach($postMeta as $post){
-			if($post['author'] == $id){
-				$this->addMessage('You must delete all of a user\'s posts before you can delete the user!', 'error');
-				return false;
-			}
-		}
-		if(!isset($yoctoMeta['users'][$id])){
-			$this->addMessage('User with the given id does not exist.', 'error');
-			return false;
-		}
-		unset($yoctoMeta['users'][$id]);
-		$this->_metaManager->saveMeta($yoctoMeta, $path . '/content/meta.yocto.json');
-		return true;
+	function actionEdit($params){
+		$y = $this;
+		$this->loadContent($this->_metaManager->templates['edit']);
+		include($this->globalTemplate);
 	}
 
-	function getPostByMeta($meta){
-		require_once('./class/post.class.php');
-		return new Post($this->_metaManager, $meta);
+	function actionDefault($params){
+		$this->registerAjax('ajax-posts', 'index.php?action=ajax-posts', 'onload');
+		$this->loadContent($this->_metaManager->templates['homepage']);
+		$y = $this;
+		include($this->globalTemplate);
 	}
 
-	function redirect($path){
-		header("Location: $path");
-	}
+
 }

@@ -6,7 +6,9 @@ rcopy('./install/defaults/', './content/');
 $meta = array(
 	"users" => array(),
 	"title"	=> "Yoctoblog",
-	"subtitle" => "Standalone Macroblogging Microplatform"
+	"subtitle" => "Standalone Macroblogging Microplatform",
+  "max_user" => 0,
+  "max_post" => 0
 );
 
 $y->metaManager->saveMeta($meta, './content/meta.yocto.json');
