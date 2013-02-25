@@ -34,12 +34,6 @@ class Post{
 				return date('Y-m-d',strtotime($this->meta['timestamp']));
 			case 'time':
 				return date('H:i:00', strtotime($this->meta['timestamp']));
-			case 'isposted':
-				return $this->meta['status'] == 'posted';
-			case 'isdraft':
-				return $this->meta['status'] == 'draft';
-			case 'isnew':
-				return !isset($this->meta['status']);
 			default:
 				if(isset($this->meta[$property])) return $this->meta[$property];
 				else return '';

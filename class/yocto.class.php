@@ -63,7 +63,7 @@ class Yocto{
 		$this->_ajaxes[] = array('id' => $id, 'source' => $path . '/' . $source, 'call' => $call);
 	}
 
-	function loadContent($location, $path = '.'){
+	function loadContent($location){
 		ob_start();
 		$y = $this;
 		include($location);
@@ -83,13 +83,18 @@ class Yocto{
 		$this->_metaManager->saveMeta($yoctoMeta, $path . '/content/meta.yocto.json');
 	}
 
-	function createPost(){
+	function createNewPostMeta(){
 		$yoctoMeta = $this->_metaManager->yocto;
 		$meta = array(
 			'id' => ++$yoctoMeta['max_post'],
+			'title' => '',
 			'author' => $_SESSION['user']->username,
-			'timestamp' => date('c')
+			'timestamp' => date('c'),
+			'status' => 'draft',
+			'content' => ''
 		);
+		$this->savePostMeta($meta);
+		return $meta;
 	}
 
 	function deleteUser($id, $path = '.'){
@@ -114,8 +119,20 @@ class Yocto{
 		return true;
 	}
 
+	function getPostById($id){
+		$id = (int)$id;
+		return $this->metaToPost($this->_metaManager->posts[$id]);
+	}
+
 	function metaToPost($meta){
 		return new Post($this->_metaManager, $meta);
+	}
+
+	function savePostMeta($meta){
+		//todo validate post
+		$postMeta = $this->_metaManager->posts;
+		$postMeta[] = $meta;
+		$this->metaManager->saveMeta(array('posts' => $postMeta), './content/posts/meta.post.json');
 	}
 
 	function redirect($path){
@@ -142,7 +159,7 @@ class Yocto{
 			case 'write':
 				$this->actionWrite($params);
 				break;
-			case 'edit':
+			case 'list':
 				$this->actionEdit($action);
 				break;
 			case 'default':
@@ -184,6 +201,7 @@ class Yocto{
 		$count = isset($params['count']) ? $params['count'] : 10;
 
 		$postMeta = $this->_metaManager->posts;
+		$postMeta = array_values($postMeta);
 
 		for($i = $start; $i < $count && $i < count($postMeta); $i++){
 			$post = $this->metaToPost($postMeta[$i]);
@@ -198,7 +216,16 @@ class Yocto{
 			'post' => false
 		);
 		if(count($_POST)){
-
+			print_r($_POST);
+			//$this->createNewPostMeta();
+		} else {
+			$status['success'] = 'true';
+			$status['post'] = array(
+				'id' => $this->_metaManager->yocto['max_post'] + 1,
+				'date' => date('Y-m-d'),
+				'time' => date('H:i:00'),
+				'status' => 'new'
+			);
 		}
 		echo(json_encode($status));
 	}
@@ -240,15 +267,6 @@ class Yocto{
 
 	function actionWrite($params){
 		$this->registerAjax('ajax-submitpost', 'index.php?action=ajax-submitpost', 'delayed');
-		$this->loadContent($this->_metaManager->templates['edit']);
-		if(isset($params['id'])){
-			$this->post = $this->metaToPost($this->_metaManager->posts[$params['id']]);
-		} else{
-			$this->post = $this->createPost();
-		}
-		if(count($_POST)){
-
-		}
 		$y = $this;
 		$this->loadContent($this->_metaManager->templates['edit']);
 		include($this->globalTemplate);
