@@ -3,7 +3,7 @@
 	<table>
 		<tr>
 			<td>Username:</td>
-			<td><input type="text" name="username" /></td>
+			<td><input type="text" name="username" autofocus /></td>
 		</tr>
 		<tr>
 			<td>Password</td>
