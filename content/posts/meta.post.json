@@ -13,6 +13,13 @@
             "timestamp": "2013-02-25T23:51:00+00:00",
             "author": 1,
             "status": "publish"
+        },
+        "3": {
+            "id": 3,
+            "title": "This is a post",
+            "timestamp": "2013-02-26T00:52:00+00:00",
+            "author": 1,
+            "status": "publish"
         }
     }
 }

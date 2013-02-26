@@ -2,12 +2,12 @@
     "users": {
         "1": {
             "salt": "ee00009",
-            "password": "eeQ.vHzsK4puk",
-            "username": "admin"
+            "password": "eeWcv5hPr9D0s",
+            "username": "erty"
         }
     },
     "title": "Yoctoblog",
     "subtitle": "Standalone Macroblogging Microplatform",
     "max_user": 1,
-    "max_post": 2
+    "max_post": 3
 }
