@@ -1,9 +1,0 @@
-{"templates":{
-	"global" : "global.template.php",
-	"homepage" : "homepage.template.php",
-	"post" : "post.template.php",
-	"rss" : "rss.template.php",
-	"login" : "login.template.php",
-	"edit" : "edit.template.php",
-	"config" : "config.template.php"
-}}
