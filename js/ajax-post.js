@@ -1,5 +1,9 @@
 window.addEventListener('load', function(){
-	mini.ajax.get('index.php?action=ajax-submitpost&post=new', callback);
+	if(typeof(editID) == 'undefined'){
+		mini.ajax.get('index.php?action=ajax-submitpost&post=new', callback);
+	} else {
+		mini.ajax.get('index.php?action=ajax-submitpost&post=existing&id=' + editID, callback);
+	}
 });
 
 function ajax_draft(){
@@ -9,7 +13,7 @@ function ajax_draft(){
 }
 
 function ajax_publish(){
-	mini.ajax.post('index.php?action=ajax-submitpost&post=publish',
+	mini.ajax.post('index.php?action=ajax-submitpost&post=published',
 		callback,
 		'data=' + stringifyData());
 }

@@ -34,6 +34,10 @@ class Post{
 				return date('Y-m-d',strtotime($this->meta['timestamp']));
 			case 'time':
 				return date('H:i:00', strtotime($this->meta['timestamp']));
+			case 'link':
+				return "./index.php?action=default&start={$this->meta['id']}&count=1";
+			case 'editlink':
+				return "./index.php?action=edit&id={$this->meta['id']}";
 			default:
 				if(isset($this->meta[$property])) return $this->meta[$property];
 				else return '';

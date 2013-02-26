@@ -5,5 +5,7 @@
 	"rss" : "rss.template.php",
 	"login" : "login.template.php",
 	"edit" : "edit.template.php",
-	"config" : "config.template.php"
+	"config" : "config.template.php",
+	"list" : "list.template.php",
+	"nocontent" : "nocontent.template.php"
 }}

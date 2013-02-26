@@ -147,16 +147,18 @@ class Yocto{
 			case 'config':
 				$this->actionConfig($params);
 				break;
-			case 'write':
-				$this->actionWrite($params);
+			case 'edit':
+				$this->actionEdit($params);
 				break;
 			case 'list':
-				$this->actionEdit($action);
+				$this->actionList($params);
 				break;
+			case 'post':
+				$this->actionPost($params);
 			case 'default':
 			default:
 				$action = 'default';
-				$this->actionDefault($action);
+				$this->actionDefault($params);
 				break;
 		}
 	}
@@ -188,15 +190,28 @@ class Yocto{
 		$returnType = 'html';
 		$returnTypes = array('json', 'html', 'rss');
 
+		$allposts = isset($params['all']) && isset($_SESSION['user']);
+		$nocontent = isset($params['nocontent']);
+
 		$start = isset($params['start']) ? $params['start'] : 0;
 		$count = isset($params['count']) ? $params['count'] : 10;
 
 		$postMeta = $this->_metaManager->posts;
 		$postMeta = array_values($postMeta);
 
+		$y = $this;
+
 		for($i = $start; $i < $count && $i < count($postMeta); $i++){
-			$post = $this->metaToPost($postMeta[$i]);
-			include($this->_metaManager->templates['post']);
+			if($allposts || $postMeta[$i]['status'] == 'published'){
+				$post = $this->metaToPost($postMeta[$i]);
+				if($nocontent){
+					include($this->_metaManager->templates['nocontent']);
+				} else {
+					include($this->_metaManager->templates['post']);
+				}
+			} else {
+				$count ++;
+			}
 		}
 	}
 
@@ -206,7 +221,7 @@ class Yocto{
 			'messages' => array(),
 			'post' => false
 		);
-		if(isset($_GET['post']) || !in_array($_GET['post'], array('new', 'draft', 'publish'))){
+		if(isset($_GET['post']) || !in_array($_GET['post'], array('new', 'draft', 'published', 'existing'))){
 			if($_GET['post'] == 'new'){
 				$status['success'] = 'true';
 				$status['post'] = array(
@@ -216,6 +231,8 @@ class Yocto{
 					'author' => $_SESSION['user']->id,
 					'status' => 'new'
 				);
+			else if($_GET['post'] == 'existing'){
+
 			} else { //draft or publish
 				$post = json_decode($_POST['data']);
 				$meta = array(
@@ -229,6 +246,8 @@ class Yocto{
 				if($this->upsertPost($meta)){
 					$status['success'] = 'true';
 					$status['post'] = $meta;
+					$status['post']['time'] = date('H:i', strtotime($meta['timestamp']));
+					$status['post']['date'] = date('Y-m-d', strtotime($meta['timestamp']));
 					if($_GET['post'] == 'draft'){
 						$status['messages'][] = 'Successfully saved draft.';
 					} else {
@@ -278,16 +297,18 @@ class Yocto{
 		include($this->globalTemplate);
 	}
 
-	function actionWrite($params){
+	function actionEdit($params){
 		$this->registerAjax('ajax-submitpost', 'index.php?action=ajax-submitpost', 'delayed');
 		$y = $this;
+		$id = (int)$params['id'];
 		$this->loadContent($this->_metaManager->templates['edit']);
 		include($this->globalTemplate);
 	}
 
-	function actionEdit($params){
+	function actionList($params){
+		$this->registerAjax('ajax-posts', 'index.php?action=ajax-posts&all&nocontent', 'onload');
 		$y = $this;
-		$this->loadContent($this->_metaManager->templates['edit']);
+		$this->loadContent($this->_metaManager->templates['list']);
 		include($this->globalTemplate);
 	}
 
@@ -297,6 +318,4 @@ class Yocto{
 		$y = $this;
 		include($this->globalTemplate);
 	}
-
-
 }
