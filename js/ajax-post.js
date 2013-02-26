@@ -1,22 +1,45 @@
 window.addEventListener('load', function(){
-	ajax.get('index.php?action=ajax-submitpost', callback);
+	mini.ajax.get('index.php?action=ajax-submitpost&post=new', callback);
 });
 
 function ajax_draft(){
-
+	mini.ajax.post('index.php?action=ajax-submitpost&post=draft',
+		callback,
+		'data=' + stringifyData());
 }
 
 function ajax_publish(){
+	mini.ajax.post('index.php?action=ajax-submitpost&post=publish',
+		callback,
+		'data=' + stringifyData());
+}
 
+function stringifyData(){
+	postData = {
+		'id' : document.getElementById('ajax-id').innerHTML,
+		'title' : document.getElementById('ajax-title').value,
+		'date' : document.getElementById('ajax-date').value,
+		'time' : document.getElementById('ajax-time').value,
+		'content' : document.getElementById('ajax-content').value
+	}
+	return encodeURIComponent(JSON.stringify(postData));
 }
 
 function callback(returnData){
+	clearMessages();
 	var jsonReturnData = eval('(' + returnData + ')');
 	if(jsonReturnData['success'] == 'true'){
 		fillData(jsonReturnData['post']);
 	} else {
 		postMessage('Saving did not succeed. Try again and check your connection to the server.');
 	}
+	for(var i = 0; i < jsonReturnData['messages'].length; i++){
+		postMessage(jsonReturnData['messages'][i]);
+	}
+}
+
+function clearMessages(){
+	//todo
 }
 
 function postMessage(message){

@@ -83,17 +83,15 @@ class Yocto{
 		$this->_metaManager->saveMeta($yoctoMeta, $path . '/content/meta.yocto.json');
 	}
 
-	function createNewPostMeta(){
+	function upsertPost($meta){
 		$yoctoMeta = $this->_metaManager->yocto;
-		$meta = array(
-			'id' => ++$yoctoMeta['max_post'],
-			'title' => '',
-			'author' => $_SESSION['user']->username,
-			'timestamp' => date('c'),
-			'status' => 'draft',
-			'content' => ''
-		);
-		$this->savePostMeta($meta);
+		$postMeta = $this->_metaManager->posts;
+		file_put_contents('./content/posts/' . $meta['id'] . '.post.html', $meta['content']);
+		unset($meta['content']);
+		$postMeta[$meta['id']] = $meta;
+		$yoctoMeta['max_post'] = max(array_keys($postMeta));
+		$this->metaManager->saveMeta(array('posts' => $postMeta), './content/posts/meta.post.json');
+		$this->_metaManager->saveMeta($yoctoMeta, './content/meta.yocto.json');
 		return $meta;
 	}
 
@@ -126,13 +124,6 @@ class Yocto{
 
 	function metaToPost($meta){
 		return new Post($this->_metaManager, $meta);
-	}
-
-	function savePostMeta($meta){
-		//todo validate post
-		$postMeta = $this->_metaManager->posts;
-		$postMeta[] = $meta;
-		$this->metaManager->saveMeta(array('posts' => $postMeta), './content/posts/meta.post.json');
 	}
 
 	function redirect($path){
@@ -215,17 +206,39 @@ class Yocto{
 			'messages' => array(),
 			'post' => false
 		);
-		if(count($_POST)){
-			print_r($_POST);
-			//$this->createNewPostMeta();
+		if(isset($_GET['post']) || !in_array($_GET['post'], array('new', 'draft', 'publish'))){
+			if($_GET['post'] == 'new'){
+				$status['success'] = 'true';
+				$status['post'] = array(
+					'id' => $this->_metaManager->yocto['max_post'] + 1,
+					'date' => date('Y-m-d'),
+					'time' => date('H:i:00'),
+					'author' => $_SESSION['user']->id,
+					'status' => 'new'
+				);
+			} else { //draft or publish
+				$post = json_decode($_POST['data']);
+				$meta = array(
+					'id' => (int)$post->id,
+					'title' => $post->title,
+					'timestamp' => date('c', strtotime($post->date . ' ' . $post->time)),
+					'author' => $_SESSION['user']->id,
+					'status' => $_GET['post'],
+					'content' => $post->content
+				);
+				if($this->upsertPost($meta)){
+					$status['success'] = 'true';
+					$status['post'] = $meta;
+					if($_GET['post'] == 'draft'){
+						$status['messages'][] = 'Successfully saved draft.';
+					} else {
+						$status['messages'][] = 'Successfully published post.';
+					}
+				}
+			}
 		} else {
-			$status['success'] = 'true';
-			$status['post'] = array(
-				'id' => $this->_metaManager->yocto['max_post'] + 1,
-				'date' => date('Y-m-d'),
-				'time' => date('H:i:00'),
-				'status' => 'new'
-			);
+			$status['messages'][] = 'Error: Invalid Query: Post type was not set.';
+			$status['success'] = false;
 		}
 		echo(json_encode($status));
 	}
