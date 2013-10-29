@@ -231,8 +231,8 @@ class Yocto{
 					'author' => $_SESSION['user']->id,
 					'status' => 'new'
 				);
-			else if($_GET['post'] == 'existing'){
-
+			} else if($_GET['post'] == 'existing'){
+				//TODO
 			} else { //draft or publish
 				$post = json_decode($_POST['data']);
 				$meta = array(
